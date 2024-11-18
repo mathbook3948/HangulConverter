@@ -40,10 +40,15 @@ public class HangulConverter {
      * 한글 문자열을 받아서 초성, 중성, 종성으로 글자별로 분해하여 2차원 배열로 반환한다
      *
      * @param content 분해하기 위한 문자열
-     * @return 초성, 중성, 종성으로 분해된 각 글자별 2차원 String 배열
+     * @return 초성, 중성, 종성으로 분해된 각 글자별 2차원 String 배열을 반환. 만약 문자열에 공백(띄어쓰기)이 있을 때
+     * 빈 문자열을 반환
+     * @throws NullPointerException 입력 문자열이 {@code null}인 경우
      */
-    public static String[][] disassemble(String content) {
+    public static String[][] disassemble(String content) throws NullPointerException {
         String[][] result = new String[content.length()][3];
+        if (content.contains(" ")) {
+            return null;
+        }
 
         for (int i = 0; i < content.length(); i++) {
             char c = content.charAt(i);
@@ -60,10 +65,15 @@ public class HangulConverter {
      * 문자열을 받아 초성만 추출하여 1차원 배열로 반환
      *
      * @param content 초성을 추출할 문자열
-     * @return 초성만 추출된 1차원 String 배열
+     * @return 초성만 추출된 1차원 String 배열을 반환. 만약 문자열에 공백(띄어쓰기)이 있을 때 빈 문자열을 반환
+     * @throws NullPointerException 입력 문자열이 {@code null}인 경우
      */
-    public static String[] getChoseong(String content) {
+    public static String[] getChoseong(String content) throws NullPointerException {
         String[] result = new String[content.length()];
+
+        if (content.contains(" ")) {
+            return new String[0];
+        }
 
         String[][] disassembled = disassemble(content);
 
