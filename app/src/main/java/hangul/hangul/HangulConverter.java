@@ -106,4 +106,22 @@ public class HangulConverter {
         }
         return result;
     }
+
+    /**
+     * 주어진 문자열이 한글 음절, 자모, 공백으로만 구성되어 있는지 확인합니다.
+     * <p>
+     * 이 메서드는 입력 값이 null인 경우 {@link NullPointerException}을 발생시킵니다.
+     * <p>
+     * 한글 음절(가-힣), 자모(ㄱ-ㅎ, ㅏ-ㅣ), 그리고 공백(스페이스)만 허용하며, 그 외의 문자가 포함되면 false를 반환합니다.
+     *
+     * @param content 확인할 문자열
+     * @return 한글 음절, 자모, 공백만 포함된 문자열이면 true, 그 외의 문자가 포함되면 false
+     * @throws NullPointerException 입력 값이 null일 경우 발생
+     */
+    public static boolean isHangul(String content) {
+        if (content == null) {
+            throw new NullPointerException("입력 값은 null이 될 수 없습니다");
+        }
+        return content.matches("^[\\u1100-\\u11FF\\u3130-\\u318F\\uAC00-\\uD7AF\\s]*$");
+    }
 }
