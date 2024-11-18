@@ -1,7 +1,7 @@
 package hangul.hangul;
 //https://github.com/intotherealworld/jamo 참고했음
 
-public class Hangul {
+public class HangulConverter {
 
     private static final int HANGUL_SYLLABLE_BASE = 0xAC00;
     private static final int INITIALS_COUNT = 19;
