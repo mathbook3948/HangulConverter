@@ -55,4 +55,22 @@ public class HangulConverter {
         }
         return result;
     }
+
+    /**
+     * 문자열을 받아 초성만 추출하여 1차원 배열로 반환
+     *
+     * @param content 초성을 추출할 문자열
+     * @return 초성만 추출된 1차원 String 배열
+     */
+    public static String[] getChoseong(String content) {
+        String[] result = new String[content.length()];
+
+        String[][] disassembled = disassemble(content);
+
+        int i = 0;
+        for (String[] strings : disassembled) {
+            result[i++] = strings[0];
+        }
+        return result;
+    }
 }
