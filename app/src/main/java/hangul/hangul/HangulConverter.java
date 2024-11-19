@@ -1,6 +1,9 @@
 package hangul.hangul;
 //https://github.com/intotherealworld/jamo 참고했음
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HangulConverter {
 
     private static final int HANGUL_SYLLABLE_BASE = 0xAC00;
@@ -57,7 +60,7 @@ public class HangulConverter {
         if (content.contains(" ")) {
             return new String[0][];
         }
-        if (!content.matches("[가-힣]+")) {
+        if (!isHangul(content)) {
             throw new IllegalArgumentException("입력 문자열은 한글만 포함해야 합니다");
         }
         String[][] result = new String[content.length()][3];
@@ -93,7 +96,7 @@ public class HangulConverter {
         if (content.contains(" ")) {
             return new String[0];
         }
-        if (!content.matches("[가-힣]+")) {
+        if (!isHangul(content)) {
             throw new IllegalArgumentException("입력 문자열은 한글만 포함해야 합니다");
         }
         String[] result = new String[content.length()];
@@ -118,10 +121,68 @@ public class HangulConverter {
      * @return 한글 음절, 자모, 공백만 포함된 문자열이면 true, 그 외의 문자가 포함되면 false
      * @throws NullPointerException 입력 값이 null일 경우 발생
      */
-    public static boolean isHangul(String content) {
+    public static boolean isHangul(String content) throws NullPointerException {
         if (content == null) {
             throw new NullPointerException("입력 값은 null이 될 수 없습니다");
         }
         return content.matches("^[\\u1100-\\u11FF\\u3130-\\u318F\\uAC00-\\uD7AF\\s]*$");
+    }
+
+    /**
+     * 주어진 단어가 타겟 문자열에 포함되어 있는지 확인합니다.
+     * <p>
+     * 이 메서드는 타겟 문자열과 단어 문자열을 각각 초성, 중성, 종성으로 분해한 후, 그 자모를 순차적으로 비교하여 "word"가
+     * "target"에 포함되어 있는지 확인합니다. 공백은 무시되고, 입력된 문자열이 한글로만 구성되어 있어야 합니다.
+     * </p>
+     *
+     * @param word 확인할 단어 문자열. 한글만 포함되어야 하며, 공백은 허용되지 않습니다.
+     * @param target 포함 여부를 확인할 대상 문자열. 한글만 포함되어야 하며, 공백은 허용되지 않습니다.
+     * @return {@code true} if the word is contained within the target,
+     * {@code false} otherwise.
+     * @throws NullPointerException 만약 입력된 {@code word}나 {@code target}이
+     * {@code null}인 경우 발생합니다.
+     * @throws IllegalArgumentException 만약 입력된 {@code word}나 {@code target}이 한글이
+     * 아닌 문자를 포함하는 경우 발생합니다.
+     */
+    public static boolean containsHangulWord(String word, String target) {
+
+        String[][] target_disassembled = disassemble(target.replaceAll("\\s", ""));
+        String[][] word_disassembled = disassemble(word.replaceAll("\\s", ""));
+        List<String> target_array = new ArrayList<>();
+        List<String> word_array = new ArrayList<>();
+
+        // target 단어를 분해하여 리스트에 추가
+        for (String[] target_disassembled1 : target_disassembled) {
+            for (String item : target_disassembled1) {
+                if (item.equals("") || item.equals(" ")) {
+                    continue;
+                }
+                target_array.add(item);
+            }
+        }
+
+        // word 단어를 분해하여 리스트에 추가
+        for (String[] word_disassembled1 : word_disassembled) {
+            for (String item : word_disassembled1) {
+                if (item.equals("") || item.equals(" ")) {
+                    continue;
+                }
+                word_array.add(item);
+            }
+        }
+
+        // List의 내용만을 비교하는 방법
+        StringBuilder targetStr = new StringBuilder();
+        for (String item : target_array) {
+            targetStr.append(item);
+        }
+
+        StringBuilder wordStr = new StringBuilder();
+        for (String item : word_array) {
+            wordStr.append(item);
+        }
+
+        // "word"가 "target"에 포함되어 있는지 확인
+        return targetStr.toString().contains(wordStr.toString());
     }
 }
