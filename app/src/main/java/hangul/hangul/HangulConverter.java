@@ -111,11 +111,11 @@ public class HangulConverter {
     }
 
     /**
-     * 주어진 문자열이 한글 음절, 자모, 공백으로만 구성되어 있는지 확인합니다.
+     * 주어진 문자열이 한글 음절, 자모로만 구성되어 있는지 확인합니다.
      * <p>
      * 이 메서드는 입력 값이 null인 경우 {@link NullPointerException}을 발생시킵니다.
      * <p>
-     * 한글 음절(가-힣), 자모(ㄱ-ㅎ, ㅏ-ㅣ), 그리고 공백(스페이스)만 허용하며, 그 외의 문자가 포함되면 false를 반환합니다.
+     * 한글 음절(가-힣), 자모(ㄱ-ㅎ, ㅏ-ㅣ)만 허용하며, 그 외의 문자(공백 포함)가 포함되면 false를 반환합니다.
      *
      * @param content 확인할 문자열
      * @return 한글 음절, 자모, 공백만 포함된 문자열이면 true, 그 외의 문자가 포함되면 false
@@ -125,7 +125,7 @@ public class HangulConverter {
         if (content == null) {
             throw new NullPointerException("입력 값은 null이 될 수 없습니다");
         }
-        return content.matches("^[\\u1100-\\u11FF\\u3130-\\u318F\\uAC00-\\uD7AF\\s]*$");
+        return content.matches("^[\\u1100-\\u11FF\\u3130-\\u318F\\uAC00-\\uD7AF]*$");
     }
 
     /**
@@ -185,4 +185,41 @@ public class HangulConverter {
         // "word"가 "target"에 포함되어 있는지 확인
         return targetStr.toString().contains(wordStr.toString());
     }
+
+    /**
+     * 한글 문자열을 비한글과 한글로 구분하여 배열로 반환한다.
+     *
+     * @param content 한글과 비한글(공백 포함)이 혼합된 문자열
+     * @return 한글과 비한글로 구분된 배열
+     */
+    public static String[] seperateHangul(String content) {
+        content = content.trim();
+        String[] contents = content.split("");
+        List<String> result = new ArrayList<>();
+        String container = "";
+        Boolean prevIsHangul = null;
+
+        for (String c : contents) {
+            boolean isCurrentHangul = isHangul(c);
+
+            if (prevIsHangul == null) {
+                prevIsHangul = isCurrentHangul;
+                container = c;  // 첫 번째 문자는 무조건 container에 추가
+            } else if (prevIsHangul == isCurrentHangul) {
+                container += c;  // 한글 또는 비한글이 연속되면 이어서 추가
+            } else {
+                result.add(container);  // 연속되지 않으면 현재까지 담은 문자 저장
+                container = c;  // 새로운 그룹의 첫 번째 문자로 시작
+                prevIsHangul = isCurrentHangul;
+            }
+        }
+
+        // 마지막 남은 문자열도 result에 추가
+        if (!container.isEmpty()) {
+            result.add(container);
+        }
+
+        return result.toArray(new String[0]);
+    }
+
 }
